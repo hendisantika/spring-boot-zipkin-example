@@ -44,6 +44,16 @@ java -jar zipkin.jar
 Whichever way you choose to run Zipkin, you’ll find it accessible on your machine at http://127.0.0.1:9411. If you open
 your browser to this address and see Zipkin running, you’re good to go!
 
+### Things todo list
+
+1. Clone this repository: `git clone https://github.com/hendisantika/spring-boot-zipkin-example.git`
+2. Navigate to the folder: `cd spring-boot-zipkin-example`
+3. Run the Zipkin Server: `java -jar zipkin.jar`
+4. Run the application: `mvn clean spring-boot:run`
+5. Open your favorite browser: http://localhost:9411
+6. Open your favorite browser: http://localhost:8080/test
+7. Open your favorite browser: http://localhost:8081/test
+
 ### image Screenshots
 
 Zipkin 1
