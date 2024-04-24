@@ -43,3 +43,17 @@ java -jar zipkin.jar
 
 Whichever way you choose to run Zipkin, you’ll find it accessible on your machine at http://127.0.0.1:9411. If you open
 your browser to this address and see Zipkin running, you’re good to go!
+
+### image Screenshots
+
+Zipkin 1
+
+![Zipkin 1](img/zipkin1.png "Zipkin 1")
+
+Zipkin 2
+
+![Zipkin 2](img/zipkin2.png "Zipkin 2")
+
+Zipkin 3
+
+![Zipkin 3](img/zipkin3.png "Zipkin 3")
