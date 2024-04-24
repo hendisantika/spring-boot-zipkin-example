@@ -21,7 +21,7 @@ class ExampleController2 {
 
     private static final Log log = LogFactory.getLog(ExampleController2.class);
 
-    @GetMapping("/test2")
+    @GetMapping("/test")
     public String testZipkin() {
         log.info("calling service 2!!");
         return "working 2!!";

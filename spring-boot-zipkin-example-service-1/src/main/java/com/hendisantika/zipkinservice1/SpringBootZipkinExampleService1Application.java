@@ -37,7 +37,7 @@ class ExampleController {
     @GetMapping("/test")
     public String testZipkin() throws URISyntaxException {
         log.info("calling service!!");
-        String message = restTemplate.getForObject(new URI("http://localhost:8081/test2"), String.class);
+        String message = restTemplate.getForObject(new URI("http://localhost:8081/test"), String.class);
         log.info("message from service 2: " + message);
         return "working!!";
     }
