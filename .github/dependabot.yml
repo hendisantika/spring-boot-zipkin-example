@@ -1,14 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: maven
-    directory: "/zipkin-service-1"
+    directory: "/spring-boot-zipkin-example-service-1"
     schedule:
       interval: daily
       time: '05:00'
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
   - package-ecosystem: maven
-    directory: "/zipkin-service-2"
+    directory: "/spring-boot-zipkin-example-service-2"
     schedule:
       interval: daily
       time: '05:00'
