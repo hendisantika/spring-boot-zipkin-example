@@ -1,5 +1,40 @@
 # spring-boot-zipkin-example
-Spring Boot Zipkin Example
+
+[![Java CI with Maven](https://github.com/hendisantika/spring-boot-zipkin-example/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/spring-boot-zipkin-example/actions/workflows/maven.yml)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-brightgreen?logo=springboot)
+![Zipkin](https://img.shields.io/badge/Zipkin-3.6.1-blue)
+
+Spring Boot Zipkin Example — two small Spring Boot services that call each other and report distributed traces to
+[Zipkin](https://zipkin.io) using Micrometer Tracing with the OpenTelemetry bridge.
+
+### Tech Stack
+
+| Component         | Version / Library                                            |
+|-------------------|--------------------------------------------------------------|
+| Java              | 25 (Temurin)                                                 |
+| Spring Boot       | 4.1.2                                                        |
+| Spring Cloud      | 2025.1.4                                                     |
+| Tracing           | Micrometer Tracing + `micrometer-tracing-bridge-otel`        |
+| Exporter          | `opentelemetry-exporter-zipkin`                              |
+| Metrics           | Micrometer Prometheus registry (`/actuator/prometheus`)      |
+| Build             | Maven 3.9+                                                   |
+| Tracing backend   | Zipkin (`openzipkin/zipkin:3.6.1` via Docker Compose)        |
+
+### Project Structure
+
+```
+spring-boot-zipkin-example
+├── .github
+│   ├── dependabot.yml                    # Dependabot (Maven, GitHub Actions, Docker Compose)
+│   └── workflows/maven.yml               # CI: build & test both services on JDK 25
+├── docker-compose.yml                    # Zipkin server
+├── spring-boot-zipkin-example-service-1  # port 8080, GET /test -> calls service-2
+└── spring-boot-zipkin-example-service-2  # port 8081, GET /test
+```
+
+Request flow: `client -> service-1 (:8080/test) -> service-2 (:8081/test)`. Both hops share the same trace ID and are
+reported to Zipkin at `http://localhost:9411/api/v2/spans`.
 
 ### Key Terminologies:
 
@@ -30,7 +65,9 @@ the [Zipkin Quickstart](https://zipkin.io/pages/quickstart.html), with the easie
 have Docker running locally already, you can get Zipkin running with one command:
 
 ```shell
-docker run -d -p 9411:9411 openzipkin/zipkin
+docker compose up -d
+# or
+docker run -d -p 9411:9411 openzipkin/zipkin:3.6.1
 ```
 
 If you don’t have Docker locally but you do have Java installed, it’s almost as easy to run it on your machine. You can
@@ -44,15 +81,45 @@ java -jar zipkin.jar
 Whichever way you choose to run Zipkin, you’ll find it accessible on your machine at http://127.0.0.1:9411. If you open
 your browser to this address and see Zipkin running, you’re good to go!
 
+### Prerequisites
+
+- JDK 25
+- Maven 3.9+
+- Docker (optional, to run Zipkin)
+
 ### Things todo list
 
 1. Clone this repository: `git clone https://github.com/hendisantika/spring-boot-zipkin-example.git`
 2. Navigate to the folder: `cd spring-boot-zipkin-example`
-3. Run the Zipkin Server: `java -jar zipkin.jar`
-4. Run the application: `mvn clean spring-boot:run`
-5. Open your favorite browser: http://localhost:9411
-6. Open your favorite browser: http://localhost:8080/test
-7. Open your favorite browser: http://localhost:8081/test
+3. Run the Zipkin Server: `docker compose up -d` (or `java -jar zipkin.jar`)
+4. Run service 2 (port 8081):
+   ```shell
+   mvn -f spring-boot-zipkin-example-service-2/pom.xml clean spring-boot:run
+   ```
+5. Run service 1 (port 8080) in another terminal:
+   ```shell
+   mvn -f spring-boot-zipkin-example-service-1/pom.xml clean spring-boot:run
+   ```
+6. Trigger a traced request: `curl http://localhost:8080/test` (service 1 calls service 2)
+7. Call service 2 directly: `curl http://localhost:8081/test`
+8. Open Zipkin UI in your favorite browser: http://localhost:9411 and click **Run Query** to see the traces
+
+### Build & Test
+
+```shell
+mvn -B verify -f spring-boot-zipkin-example-service-1/pom.xml
+mvn -B verify -f spring-boot-zipkin-example-service-2/pom.xml
+```
+
+### CI & Dependency Updates
+
+- **GitHub Actions** — [`maven.yml`](.github/workflows/maven.yml) builds and tests both services on JDK 25 (Temurin)
+  using a matrix, on every push / pull request to `main`.
+- **Dependabot** — [`dependabot.yml`](.github/dependabot.yml) keeps dependencies up to date:
+    - Maven (both services, daily): grouped into `spring-boot`, `spring-cloud`, `observability`
+      (Micrometer / OpenTelemetry / Zipkin), `maven-plugins` and `minor-and-patch`.
+    - GitHub Actions (weekly, grouped into a single PR).
+    - Docker Compose image for Zipkin (weekly).
 
 ### image Screenshots
 
