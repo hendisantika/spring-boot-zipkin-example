@@ -1,20 +1,81 @@
 version: 2
 updates:
+  # Maven dependencies for both services (one entry handles both directories)
   - package-ecosystem: maven
-    directory: "/spring-boot-zipkin-example-service-1"
+    directories:
+      - "/spring-boot-zipkin-example-service-1"
+      - "/spring-boot-zipkin-example-service-2"
     schedule:
       interval: daily
-      time: '05:00'
+      time: "05:00"
       timezone: Asia/Jakarta
     open-pull-requests-limit: 10
-  - package-ecosystem: maven
-    directory: "/spring-boot-zipkin-example-service-2"
-    schedule:
-      interval: daily
-      time: '05:00'
-      timezone: Asia/Jakarta
-    open-pull-requests-limit: 10
-  - package-ecosystem: "github-actions"
+    labels:
+      - "dependencies"
+      - "java"
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: scope
+    groups:
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+      spring-cloud:
+        patterns:
+          - "org.springframework.cloud*"
+      observability:
+        patterns:
+          - "io.micrometer*"
+          - "io.opentelemetry*"
+          - "io.zipkin*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins*"
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+        exclude-patterns:
+          - "org.springframework.boot*"
+          - "org.springframework.cloud*"
+          - "io.micrometer*"
+          - "io.opentelemetry*"
+          - "io.zipkin*"
+          - "org.apache.maven.plugins*"
+
+  # GitHub Actions used in workflows
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github_actions"
+    commit-message:
+      prefix: "ci(deps)"
+      include: scope
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # Docker images referenced in docker-compose.yml (Zipkin server)
+  - package-ecosystem: docker-compose
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(deps)"
+      include: scope
